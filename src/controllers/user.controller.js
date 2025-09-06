@@ -36,6 +36,33 @@ res.cookie('token',token)
  })
   
 }
+
+async function  loginController(req,res) {
+ const {email, password}  = req.body
+ const user = await userModel.findOne({email}).select('+password')
+ 
+ if(!user){
+    return res.status(404).json({
+        message:'user not found'
+    })
+ }
+
+const isMatched = await bcrypt.compare(password, user.password)
+
+ if(!isMatched){
+    return res.status(400).json({
+       message:"invalid credentials"
+    })
+ }
+
+ const token = jwt.sign({id:user._id}, process.env.JWT_SECRET)
+
+ res.cookie('token',token)
+ res.status(200).json({
+    message:'user loggedin successfully'
+ })
+}
+
 module.exports = {
-    registerController
+    registerController, loginController
 }
