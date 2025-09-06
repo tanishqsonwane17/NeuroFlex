@@ -57,12 +57,39 @@ const isMatched = await bcrypt.compare(password, user.password)
 
  const token = jwt.sign({id:user._id}, process.env.JWT_SECRET)
 
+
  res.cookie('token',token)
  res.status(200).json({
     message:'user loggedin successfully'
  })
 }
 
+async function profileController(req,res) {
+  
+    const token = req.cookies.token
+
+    if(!token){
+        return res.status(401).json({
+            message:'unauthorized'
+        })
+    }
+
+    const {id} = jwt.verify(token, process.env.JWT_SECRET)
+  
+    if(!id){
+        return res.status(401).json({
+            message:'unauthorized'
+        })
+    }
+    const params = {id}
+
+
+    const user = await userModel.findById(params.id).select('-password')
+    return res.status(200).json({
+        user
+    })
+}
+
 module.exports = {
-    registerController, loginController
+    registerController, loginController, profileController
 }
