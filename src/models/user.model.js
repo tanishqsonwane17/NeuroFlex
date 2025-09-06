@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-
+const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({
 fullName:{
     firstname:{
@@ -22,9 +21,10 @@ fullName:{
     type: String,
     required: true,
     minlength: 1,
+    
     select: false 
   },
 
 }, { timestamps: true });
 
-export default mongoose.model("User", userSchema);
+module.exports = mongoose.model('user',userSchema)
